@@ -1,4 +1,3 @@
-# LZW_Compressor
 # Compresor y Descompresor de archivos
 
 Este proyecto consiste en un compresor y descompresor secuencial de archivos de texto, así como un verificador para garantizar la integridad del archivo descomprimido. 
