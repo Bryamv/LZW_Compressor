@@ -6,9 +6,9 @@ def compare_files(file1, file2):
         content2 = f2.read()
 
     if content1 == content2:
-        print("Los archivos son iguales")
+        print("ok")
     else:
-        print("Los archivos son diferentes")
+        print("nok")
 
 
 if __name__ == "__main__":

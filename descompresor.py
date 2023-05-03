@@ -45,4 +45,4 @@ start_time = time.time()
 decompress_file("comprimido.elmejorprofesor", "descomprimido-elmejorprofesor.txt")
 end_time = time.time()
 
-print(f'El tiempo de ejecución fue: {end_time-start_time} segundos')
+print(f'El tiempo de ejecución fue: {end_time-start_time:.2f} segundos')
