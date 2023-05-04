@@ -2,21 +2,21 @@ import time
 import sys
 
 
-def lzw_compress(text):
+def lzw_compress(data):
     dictionary = {}
     for i in range(256):
-        dictionary[chr(i)] = i
+        dictionary[bytes([i])] = i
 
     result = []
-    buffer = ""
-    for char in text:
-        new_buffer = buffer + char
+    buffer = b""
+    for byte in data:
+        new_buffer = buffer + bytes([byte])
         if new_buffer in dictionary:
             buffer = new_buffer
         else:
             result.append(dictionary[buffer])
             dictionary[new_buffer] = len(dictionary)
-            buffer = char
+            buffer = bytes([byte])
     if buffer:
         result.append(dictionary[buffer])
 
@@ -24,7 +24,7 @@ def lzw_compress(text):
 
 
 def compress_file(input_file_path, output_file_path):
-    with open(input_file_path, "r", encoding="iso-8859-1") as input_file:
+    with open(input_file_path, "rb") as input_file:
         text = input_file.read()
 
     compressed_text = lzw_compress(text)
