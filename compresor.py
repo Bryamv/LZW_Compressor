@@ -5,7 +5,7 @@ import sys
 def lzw_compress(text):
     dictionary = {}
     for i in range(256):
-        dictionary[chr(i)] = i
+        dictionary[chr(i)] = 
 
     result = []
     buffer = ""
