@@ -3,24 +3,24 @@ import time
 def lzw_decompress(compressed_text):
     dictionary = {}
     for i in range(256):
-        dictionary[i] = chr(i)
-        
-    result = ""
-    buffer = ""
+        dictionary[i] = bytes([i])
+
+    result = bytearray()
+    buffer = bytearray()
     for code in compressed_text:
         if code in dictionary:
             new_buffer = dictionary[code]
         elif code == len(dictionary):
-            new_buffer = buffer + buffer[0]
+            new_buffer = buffer + bytes([buffer[0]])
         else:
             raise ValueError("Invalid LZW code")
-        
+
         result += new_buffer
         if buffer:
-            dictionary[len(dictionary)] = buffer + new_buffer[0]
+            dictionary[len(dictionary)] = buffer + bytes([new_buffer[0]])
         buffer = new_buffer
-        
-    return result
+
+    return result.decode("iso-8859-1")
 
 
 def decompress_file(input_file_path, output_file_path):
@@ -36,7 +36,7 @@ def decompress_file(input_file_path, output_file_path):
             
     text = lzw_decompress(compressed_text)
     
-    with open(output_file_path, "w", encoding="iso-8859-1") as output_file:
+    with open(output_file_path, "wb") as output_file:
         output_file.write(text)
 
     
