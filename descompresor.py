@@ -37,7 +37,8 @@ def decompress_file(input_file_path, output_file_path):
     text = lzw_decompress(compressed_text)
     
     with open(output_file_path, "wb") as output_file:
-        output_file.write(text)
+        output_file.write(text.encode("iso-8859-1"))
+
 
     
     
