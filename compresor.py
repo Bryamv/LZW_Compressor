@@ -5,7 +5,8 @@ import sys
 def lzw_compress(data):
     dictionary = {}
     for i in range(256):
-        
+        print('i', i)
+        print('bytes([i])', bytes([i]))
         dictionary[bytes([i])] = i
 
     result = []
