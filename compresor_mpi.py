@@ -54,7 +54,7 @@ def compress_file(input_file_path, output_file_path, comm):
 
     if rank == 0:
         # Write the compressed text to the output file
-        with open(output_file_path, "ab") as output_file:
+        with open(output_file_path, "wb") as output_file:
             for text in compressed_texts:
                 for code in text:
                     output_file.write(code.to_bytes(4, byteorder="big"))
