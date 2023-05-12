@@ -1,5 +1,5 @@
-from mpi4py import MPI
 import time
+from mpi4py import MPI
 
 def lzw_decompress(compressed_text):
     dictionary = {}
