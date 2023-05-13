@@ -2,8 +2,10 @@ import time
 import sys
 
 
+dictionary = {}
+
 def lzw_compress(data):
-    dictionary = {}
+    
     for i in range(256):
         dictionary[bytes([i])] = i
 
@@ -19,7 +21,7 @@ def lzw_compress(data):
             buffer = bytes([byte])
     if buffer:
         result.append(dictionary[buffer])
-
+    #print(f"{(result)}")
     return result
 
 
@@ -28,6 +30,7 @@ def compress_file(input_file_path, output_file_path):
         text = input_file.read()
         
     compressed_text = lzw_compress(text)
+    
     
     with open(output_file_path, "wb") as output_file:
         for code in compressed_text:

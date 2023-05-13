@@ -3,11 +3,12 @@ import sys
 from mpi4py import MPI
 import os
 import math
-
-def lzw_compress(data):
-    dictionary = {}
-    for i in range(256):
+dictionary = {}
+for i in range(256):
         dictionary[bytes([i])] = i
+def lzw_compress(data):
+    
+    
 
     result = []
     buffer = b""
@@ -56,6 +57,7 @@ def compress_file(input_file_path, output_file_path):
         for i in range(1, size):
             # Recibe los datos de cada proceso
             data += comm.recv(source=i)
+            
             # Escribe los datos en el archivo de salida
             with open(output_file_path, "wb") as output_file:
                 for code in data:
@@ -65,6 +67,7 @@ def compress_file(input_file_path, output_file_path):
         compressed_text = lzw_compress(data)
         # Convierte los datos comprimidos a bytes
         # Envía los datos comprimidos al proceso 0
+        print(f"proceso {rank}: {(compressed_text)}")
         comm.send(compressed_text, dest=0)
 
 
