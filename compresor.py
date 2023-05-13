@@ -26,9 +26,9 @@ def lzw_compress(data):
 def compress_file(input_file_path, output_file_path):
     with open(input_file_path, "rb") as input_file:
         text = input_file.read()
-
+        
     compressed_text = lzw_compress(text)
-
+    
     with open(output_file_path, "wb") as output_file:
         for code in compressed_text:
             output_file.write(code.to_bytes(4, byteorder="big"))

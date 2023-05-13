@@ -1,6 +1,8 @@
 import time
 import sys
 from mpi4py import MPI
+import os
+import math
 
 def lzw_compress(data):
     dictionary = {}
@@ -23,63 +25,58 @@ def lzw_compress(data):
     return result
 
 
-def compress_file(input_file_path, output_file_path, comm):
+def compress_file(input_file_path, output_file_path):
+    comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    with open(input_file_path, "rb") as input_file:
-        input_file.seek(0, 2)  # Move to the end of the file
-        file_size = input_file.tell()
-        block_size = file_size // size
-        input_file.seek(rank * block_size)  # Move to the start of the block
-        if rank == size - 1:  # Last rank gets the remaining bytes
-            block_size = file_size - (rank * block_size)
-        data = input_file.read(block_size)
+    file_size = os.path.getsize(input_file_path)
 
-    compressed_text = lzw_compress(data)
+    # Calcula el tamaño de cada parte en bytes
+    part_size = math.ceil(file_size / size)
 
-    # Gather compressed text sizes from all processes
-    compressed_sizes = comm.gather(len(compressed_text), root=0)
+    file_parts = []
+    with open(input_file_path, 'rb') as file:
+        for i in range(size):
+            # Lee n bytes del archivo
+            data = file.read(part_size)
+            # Agrega los n bytes a la lista de fragmentos
+            file_parts.append(data)
 
+
+    # Distribuir la lista entre los procesos
+    data = comm.scatter(file_parts, root=0)
+    
+    
     if rank == 0:
-        # Compute the total size of the compressed text
-        total_size = sum(compressed_sizes)
+        compressed_text = lzw_compress(data)
 
-        # Write the total size to the output file
-        with open(output_file_path, "wb") as output_file:
-            output_file.write(total_size.to_bytes(4, byteorder="big"))
+        data = compressed_text
 
-    # Gather compressed text from all processes
-    compressed_texts = comm.gather(compressed_text, root=0)
-
-    if rank == 0:
-        # Write the compressed text to the output file
-        with open(output_file_path, "wb") as output_file:
-            for text in compressed_texts:
-                for code in text:
+        for i in range(1, size):
+            # Recibe los datos de cada proceso
+            data += comm.recv(source=i)
+            # Escribe los datos en el archivo de salida
+            with open(output_file_path, "wb") as output_file:
+                for code in data:
                     output_file.write(code.to_bytes(4, byteorder="big"))
+    else: 
+        # Comprime los datos recibidos
+        compressed_text = lzw_compress(data)
+        # Convierte los datos comprimidos a bytes
+        # Envía los datos comprimidos al proceso 0
+        comm.send(compressed_text, dest=0)
+
 
 if __name__ == "__main__":
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-
-    if rank == 0:
-        if len(sys.argv) != 2:
-            print("Debes especificar el nombre del archivo a comprimir")
-            sys.exit()
-        input_file_path = sys.argv[1]
-        output_file_path = "comprimido.elmejorprofesor"
-    else:
-        input_file_path = None
-        output_file_path = None
-
-    # Broadcast input and output file paths to all processes
-    input_file_path = comm.bcast(input_file_path, root=0)
-    output_file_path = comm.bcast(output_file_path, root=0)
+    if len(sys.argv) != 2:
+        print("Debes especificar el nombre del archivo a comprimir")
+        sys.exit()
+    input_file_path = sys.argv[1]
+    output_file_path = "comprimido.elmejorprofesor"
 
     start_time = time.time()
-    compress_file(input_file_path, output_file_path, comm)
+    compress_file(input_file_path, output_file_path)
     end_time = time.time()
 
-    if rank == 0:
-        print(f"El tiempo de ejecución fue: {end_time - start_time:.2f} segundos")
+    print(f"El tiempo de ejecución fue: {end_time - start_time:.2f} segundos")
