@@ -4,14 +4,14 @@ from mpi4py import MPI
 import os
 import math
 dictionary = {}
-for i in range(256):
-        dictionary[bytes([i])] = i
+
 def lzw_compress(data):
     
-    
+    for i in range(256):
+        dictionary[bytes([i])] = i
 
-    result = []
-    buffer = b""
+    result = bytearray()
+    buffer = bytearray()
     for byte in data:
         new_buffer = buffer + bytes([byte])
         if new_buffer in dictionary:
