@@ -41,10 +41,11 @@ def compress_file(input_file_path, output_file_path):
         for i in range(size):
             # Lee n bytes del archivo
             data = file.read(part_size)
+            
             # Agrega los n bytes a la lista de fragmentos
             file_parts.append(data)
 
-
+    
     # Distribuir la lista entre los procesos
     data = comm.scatter(file_parts, root=0)
     
