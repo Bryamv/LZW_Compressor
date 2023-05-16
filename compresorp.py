@@ -3,12 +3,13 @@ import sys
 from mpi4py import MPI
 import os
 import math
+dictionary = {}
+for i in range(256):
+        dictionary[bytes([i])] = i
+def lzw_compress(data):
+    
+    
 
-
-def lzw_compress(data, max_dict_size=2**16):
-    dictionary = {}
-    for i in range(256):
-        dictionary[bytes([i])] = i.to_bytes(4, byteorder='big')
     result = []
     buffer = b""
     for byte in data:
@@ -28,9 +29,6 @@ def lzw_compress(data, max_dict_size=2**16):
 
 
 def compress_file(input_file_path, output_file_path):
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    size = comm.Get_size()
 
     file_size = os.path.getsize(input_file_path)
     part_size = math.ceil(file_size / size)
@@ -39,8 +37,11 @@ def compress_file(input_file_path, output_file_path):
     with open(input_file_path, 'rb') as file:
         for i in range(size):
             data = file.read(part_size)
+            # Agrega los n bytes a la lista de fragmentos
             file_parts.append(data)
 
+
+    # Distribuir la lista entre los procesos
     data = comm.scatter(file_parts, root=0)
 
     if rank == 0:
@@ -52,24 +53,23 @@ def compress_file(input_file_path, output_file_path):
         for i in range(1, size):
             comm.send(dictionary, dest=i)
 
-        final_data = compressed_data
+        data = compressed_text
 
         for i in range(1, size):
-            received_data = comm.recv(source=i)
-            final_data.extend(received_data)
-
-        with open(output_file_path, "wb") as output_file:
-            output_file.write(final_data)
-
-    else:
-        dictionary = comm.bcast(None, root=0)
-        compressed_text, _ = lzw_compress(data, max_dict_size=len(dictionary))
-
-        compressed_data = bytearray()
-        for code in compressed_text:
-            compressed_data.extend(code.to_bytes(4, byteorder="big"))
-
-        comm.send(compressed_data, dest=0)
+            # Recibe los datos de cada proceso
+            data += comm.recv(source=i)
+            
+            # Escribe los datos en el archivo de salida
+            with open(output_file_path, "wb") as output_file:
+                for code in data:
+                    output_file.write(code.to_bytes(4, byteorder="big"))
+    else: 
+        # Comprime los datos recibidos
+        compressed_text = lzw_compress(data)
+        # Convierte los datos comprimidos a bytes
+        # Envía los datos comprimidos al proceso 0
+        print(f"proceso {rank}: {(compressed_text)}")
+        comm.send(compressed_text, dest=0)
 
 
 if __name__ == "__main__":
@@ -79,8 +79,16 @@ if __name__ == "__main__":
     input_file_path = sys.argv[1]
     output_file_path = sys.argv[2]
 
-    start_time = time.time()
-    compress_file(input_file_path, output_file_path)
-    end_time = time.time()
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
 
-    print(f"El tiempo de ejecución fue: {end_time - start_time:.2f} segundos")
+
+    start_time = MPI.Wtime()
+
+    compress_file(input_file_path, output_file_path)
+
+    end_time = MPI.Wtime()
+    if rank == 0:
+       print(f"{end_time - start_time:.2f}")
+
