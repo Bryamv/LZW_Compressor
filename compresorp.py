@@ -3,13 +3,11 @@ import sys
 from mpi4py import MPI
 import os
 import math
+
 dictionary = {}
 for i in range(256):
         dictionary[bytes([i])] = i
 
-comm = MPI.COMM_WORLD
-rank = comm.Get_rank()
-size = comm.Get_size()
 
 def lzw_compress(data):
     
@@ -104,8 +102,16 @@ if __name__ == "__main__":
     input_file_path = sys.argv[1]
     output_file_path = "comprimido.elmejorprofesor"
 
-    start_time = time.time()
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+
+    start_time = MPI.Wtime()
+
     compress_file(input_file_path, output_file_path)
-    end_time = time.time()
-    print(f"El tiempo de ejecución fue: {end_time - start_time:.2f} segundos")
+
+    end_time = MPI.Wtime()
+    if rank == 0:
+       print(f"{end_time - start_time:.2f}")
 
