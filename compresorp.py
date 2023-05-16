@@ -53,22 +53,29 @@ def compress_file(input_file_path, output_file_path):
         compressed_text = lzw_compress(data)
 
         data = compressed_text
-
-        for i in range(1, size):
-            # Recibe los datos de cada proceso
-            data += comm.recv(source=i)
-            
-            # Escribe los datos en el archivo de salida
-            with open(output_file_path, "wb") as output_file:
+        with open(f'comprimido_{rank}.bin', "wb") as output_file:
                 for code in data:
                     output_file.write(code.to_bytes(4, byteorder="big"))
+        #for i in range(1, size):
+            # Recibe los datos de cada proceso
+            #data += comm.recv(source=i)
+            #
+            # Escribe los datos en el archivo de salida
+            #with open(output_file_path, "wb") as output_file:
+             #   for code in data:
+               #     output_file.write(code.to_bytes(4, byteorder="big"))
     else: 
         # Comprime los datos recibidos
         compressed_text = lzw_compress(data)
         # Convierte los datos comprimidos a bytes
         # Envía los datos comprimidos al proceso 0
-        print(f"proceso {rank}: {(compressed_text)}")
-        comm.send(compressed_text, dest=0)
+       # print(f"proceso {rank}: {(compressed_text)}")
+
+        with open(f'comprimido_{rank}.bin', "wb") as output_file:
+                for code in compressed_text:
+                    output_file.write(code.to_bytes(4, byteorder="big"))
+
+        #comm.send(compressed_text, dest=0)
 
 
 if __name__ == "__main__":
