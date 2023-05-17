@@ -23,8 +23,7 @@ def lzw_compress(data):
             result.append(int.from_bytes(dictionary[buffer], byteorder='big'))
             dictionary[new_buffer] = len(dictionary).to_bytes(2, byteorder='big')
             buffer = bytes([byte])
-            if len(dictionary) >= max_dict_size:
-                break
+           
     if buffer:
         result.append(int.from_bytes(dictionary[buffer], byteorder='big'))
 
