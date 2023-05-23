@@ -1,4 +1,5 @@
 import time
+import sys
 
 def lzw_decompress(compressed_text):
     dictionary = {}
@@ -42,8 +43,16 @@ def decompress_file(input_file_path, output_file_path):
 
     
     
-start_time = time.time()
-decompress_file("comprimido.elmejorprofesor", "descomprimido-elmejorprofesor.txt")
-end_time = time.time()
+if __name__ == "__main__":
+    
 
-print(f'El tiempo de ejecución fue: {end_time-start_time:.2f} segundos')
+    if len(sys.argv) != 2:
+            print("Debes especificar el nombre del archivo a comprimir")
+            sys.exit()
+    input_file_path = sys.argv[1]
+    
+    start_time = time.time()
+    decompress_file(input_file_path, "descomprimido-elmejorprofesor.txt")
+    end_time = time.time()
+
+    print(f'El tiempo de ejecución fue: {end_time-start_time:.2f} segundos')

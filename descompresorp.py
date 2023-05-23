@@ -1,5 +1,6 @@
 import time
 from mpi4py import MPI
+import sys
 
 def lzw_decompress(compressed_text):
     dictionary = {}
@@ -61,8 +62,11 @@ def decompress_file(input_file_path, output_file_path):
 
 
 if __name__ == "__main__":
-    input_file_path = "comprimido.elmejorprofesor"  # Ruta del archivo de entrada
-    output_file_path = "descomprimido-elmejorprofesor.txt"  # Ruta del archivo de salida
+    if len(sys.argv) != 2:
+        print("Debes especificar el nombre del archivo a comprimir")
+        sys.exit()
+    input_file_path = sys.argv[1]  # Ruta del archivo de entrada
+    output_file_path = "descomprimidop-elmejorprofesor.txt"  # Ruta del archivo de salida
 
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
