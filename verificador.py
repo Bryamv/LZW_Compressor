@@ -1,8 +1,8 @@
 import sys
 def compare_files(file1, file2):
-    with open(file1, 'r', encoding='iso-8859-1') as f1:
+    with open(file1, 'rb') as f1:
         content1 = f1.read()
-    with open(file2, 'r', encoding='iso-8859-1') as f2:
+    with open(file2, 'rb') as f2:
         content2 = f2.read()
 
     if content1 == content2:
@@ -12,11 +12,12 @@ def compare_files(file1, file2):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Debes especificar el nombre del archivo a comparar")
         sys.exit()
-    file = sys.argv[1]    
-    compare_files(file, "descomprimido-elmejorprofesor.txt")
+    file = sys.argv[1]
+    file1 = sys.argv[2]
+    compare_files(file, file1)
     
 
 

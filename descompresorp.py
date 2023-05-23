@@ -63,18 +63,17 @@ def decompress_file(input_file_path, output_file_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Debes especificar el nombre del archivo a comprimir")
-        sys.exit()
-    input_file_path = sys.argv[1]  # Ruta del archivo de entrada
-    output_file_path = "descomprimidop-elmejorprofesor.txt"  # Ruta del archivo de salida
+            print("Debes especificar el nombre del archivo a comprimir")
+            sys.exit()
+    input_file_path = sys.argv[1]
 
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    
+
     start_time = MPI.Wtime()
-    decompress_file(input_file_path, output_file_path)
+    decompress_file(input_file_path, "descomprimidop-elmejorprofesor.txt")
     end_time = MPI.Wtime()
     if rank == 0:
      print(f"{end_time - start_time}")

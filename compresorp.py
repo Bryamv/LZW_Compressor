@@ -3,20 +3,20 @@ import sys
 from mpi4py import MPI
 import os
 import math
-import sys
-
 
 dictionary = {}
-
-
-
-def lzw_compress(data):
-    
-    for i in range(256):
+for i in range(256):
         dictionary[bytes([i])] = i
 
-    result = bytearray()
-    buffer = bytearray()
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
+
+def lzw_compress(data):
+
+    
+    result = []
+    buffer = b""
     for byte in data:
         new_buffer = buffer + bytes([byte])
         if new_buffer in dictionary:
@@ -27,17 +27,11 @@ def lzw_compress(data):
             buffer = bytes([byte])
     if buffer:
         result.append(dictionary[buffer])
-
     return result
-
-
 def compress_file(input_file_path, output_file_path):
-
     file_size = os.path.getsize(input_file_path)
-
     # Calcula el tamaño de cada parte en bytes
     part_size = math.ceil(file_size / size)
-
     file_parts = []
     with open(input_file_path, 'rb') as file:
         for i in range(size):
@@ -46,7 +40,6 @@ def compress_file(input_file_path, output_file_path):
             
             # Agrega los n bytes a la lista de fragmentos
             file_parts.append(data)
-
     
     # Distribuir la lista entre los procesos
     data = comm.scatter(file_parts, root=0)
@@ -54,14 +47,12 @@ def compress_file(input_file_path, output_file_path):
     
     if rank == 0:
         compressed_text = lzw_compress(data)
-
         data = compressed_text
         with open(f'comprimido_{rank}.bin', "wb") as output_file:
                 for code in data:
                     output_file.write(code.to_bytes(4, byteorder="big"))
         
         comm.barrier()
-
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
         for i in range(size):
@@ -86,17 +77,12 @@ def compress_file(input_file_path, output_file_path):
         # Convierte los datos comprimidos a bytes
         # Envía los datos comprimidos al proceso 0
        # print(f"proceso {rank}: {(compressed_text)}")
-
         with open(f'comprimido_{rank}.bin', "wb") as output_file:
                 for code in compressed_text:
                     output_file.write(code.to_bytes(4, byteorder="big"))
-
         comm.barrier()
-
    
         #comm.send(compressed_text, dest=0)
-
-
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Debes especificar el nombre del archivo a comprimir")
@@ -104,6 +90,7 @@ if __name__ == "__main__":
     input_file_path = sys.argv[1]
     output_file_path = "comprimidop.elmejorprofesor"
 
+    start_time = time.time()
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -112,8 +99,8 @@ if __name__ == "__main__":
     start_time = MPI.Wtime()
 
     compress_file(input_file_path, output_file_path)
+    end_time = time.time()
 
     end_time = MPI.Wtime()
     if rank == 0:
        print(f"{end_time - start_time:.2f}")
-
