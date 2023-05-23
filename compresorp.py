@@ -100,7 +100,7 @@ if __name__ == "__main__":
         print("Debes especificar el nombre del archivo a comprimir")
         sys.exit()
     input_file_path = sys.argv[1]
-    output_file_path = "comprimido.elmejorprofesor"
+    output_file_path = "comprimidop.elmejorprofesor"
 
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
