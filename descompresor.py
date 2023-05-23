@@ -41,7 +41,13 @@ def decompress_file(input_file_path, output_file_path):
         output_file.write(text.encode("iso-8859-1"))
 
 
-    
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Debes especificar el nombre del archivo a comprimir")
+        sys.exit()
+    input_file_path = sys.argv[1]
+    output_file_path = "comprimido.elmejorprofesor"
     
 if __name__ == "__main__":
     
