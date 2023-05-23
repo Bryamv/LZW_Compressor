@@ -12,11 +12,12 @@ def compare_files(file1, file2):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Debes especificar el nombre del archivo a comparar")
         sys.exit()
-    file = sys.argv[1]    
-    compare_files(file, "descomprimido-elmejorprofesor.txt")
+    file = sys.argv[1]
+    file1 = sys.argv[2]  
+    compare_files(file, file1)
     
 
 
