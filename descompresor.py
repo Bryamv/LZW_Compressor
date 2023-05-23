@@ -55,4 +55,4 @@ if __name__ == "__main__":
     decompress_file(input_file_path, "descomprimido-elmejorprofesor.txt")
     end_time = time.time()
 
-    print(f'El tiempo de ejecución fue: {end_time-start_time:.2f} segundos')
+    print(f'{end_time-start_time:.2f}')

@@ -48,4 +48,4 @@ if __name__ == "__main__":
     compress_file(input_file_path, output_file_path)
     end_time = time.time()
 
-    print(f"El tiempo de ejecución fue: {end_time - start_time:.2f} segundos")
+    print(f"{end_time - start_time:.2f}")

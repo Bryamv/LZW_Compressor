@@ -103,6 +103,7 @@ if __name__ == "__main__":
         sys.exit()
     input_file_path = sys.argv[1]
     output_file_path = "comprimidop.elmejorprofesor"
+    
 
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
